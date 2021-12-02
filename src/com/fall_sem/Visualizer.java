@@ -6,15 +6,12 @@ import java.awt.event.ActionListener;
 
 public class Visualizer {
     private JPanel Base_Panel;
-    private JButton submit;
+    private JTabbedPane tabbedPane1;
+    private JRadioButton radioButton1;
+    private JPanel Base_Conversion;
+    private JTextPane Welcome_Text;
 
     public Visualizer() {
-        submit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(null, "Deez Nuts");
-            }
-        });
     }
 
     public static void main(String[] args) {
