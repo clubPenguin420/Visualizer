@@ -7,9 +7,9 @@ import java.awt.event.ActionListener;
 public class Visualizer {
     private JPanel Base_Panel;
     private JTabbedPane tabbedPane1;
-    private JRadioButton radioButton1;
-    private JPanel Base_Conversion;
     private JTextPane Welcome_Text;
+    private JTextField textField1;
+    private JButton button1;
 
     public Visualizer() {
     }
