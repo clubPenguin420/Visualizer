@@ -29,9 +29,9 @@ public class Parser {
      * literal :>  NUMBER | '(' expression ')' ;
      */
     private Expression literal() throws IOException {
-        if(match(NUMBER)) return new Expression.Set(previous().getLexme());
+        if(match(NUMBER)) return new Expression.Literal(previous().getLexme());
         if(match(VARIABLE)){
-            return new Expression.Set(env.variables.get(String.valueOf(previous().getLexme())));
+            return new Expression.Literal(env.variables.get(String.valueOf(previous().getLexme())));
         }
         if(match(ANS)) return new Expression.Literal(env.getPreviousResult());
         if(match(LEFT_PAREN)) {
@@ -77,9 +77,9 @@ public class Parser {
             Token function = previous();
             consume(LEFT_PAREN);
             ArrayList<Expression> args = new ArrayList<>();
-            args.add(expression());
+            args.add(set());
             while(match(COMMA)){
-                args.add(expression());
+                args.add(set());
             }
             consume(RIGHT_PAREN);
             return new Expression.Function(function, args);
@@ -164,8 +164,21 @@ public class Parser {
         return addsub();
     }
 
+    private Expression set() throws IOException {
+        if(match(LEFT_CB)) {
+            ArrayList<Expression> values = new ArrayList<>();
+            values.add(expression());
+            while(match(COMMA)) {
+                values.add(expression());
+            }
+            consume(RIGHT_CB);
+            return new Expression.Set(values);
+        }
+        return expression();
+    }
+
     /**
-     *assignment :> ( variable = expression ) | expression ;
+     *assignment :> ( variable = set ) | set ;
      */
     private Expression assignment() throws IOException {
         if(match(VARIABLE)){
@@ -179,7 +192,7 @@ public class Parser {
             }
 
         }
-        return expression();
+        return set();
     }
 
 

@@ -9,6 +9,7 @@ public abstract class Expression {
         T visitGroupingNode(Grouping expr);
         T visitUnaryNode(Unary expr);
         T visitFunctionNode(Function expr);
+        T visitLiteralNode(Literal expr);
         T visitSetNode(Set expr);
         T visitNullNode(Null expr);
     }
@@ -90,26 +91,16 @@ public abstract class Expression {
 
     static class Function extends Expression {
         final Token function;
-        private Expression argument;
         private ArrayList<Expression> arguments;
-        boolean argOrArgs; // true = arg, false = args
-
-        public Function(Token function, Expression argument) {
-            this.function = function;
-            this.argument = argument;
-            argOrArgs = true;
-        }
 
         public Function(Token function, ArrayList<Expression> argument) {
             this.function = function;
             this.arguments = argument;
-            argOrArgs = false;
         }
 
-        public boolean getState() { return argOrArgs; }
         public Token getFunction() { return this.function;}
-        public Expression getArgument() {return this.argument;}
         public ArrayList<Expression> getArguments() {return this.arguments;}
+        public Expression getArgument() { return this.arguments.get(0); }
 
         @Override
         <T> T accept(Visitor<T> visitor) { return visitor.visitFunctionNode(this); }
@@ -117,13 +108,26 @@ public abstract class Expression {
     }
 
 
-    static class Set extends Expression {
-        final ArrayList<Object> value;
+    static class Literal extends Expression {
+        final Object value;
 
-        public Set(ArrayList<Object> value) {
+        public Literal(Object value) {
             this.value = value;
         }
         public String getValue() { return this.value.toString();}
+
+        @Override
+        <T> T accept(Visitor<T> visitor) {
+            return visitor.visitLiteralNode(this);
+        }
+    }
+
+    static class Set extends Expression {
+        final ArrayList<Expression> values;
+
+        public Set(ArrayList<Expression> values) { this.values = values; }
+
+        public ArrayList<Expression> getValues() { return this.values; }
 
         @Override
         <T> T accept(Visitor<T> visitor) {

@@ -2,6 +2,7 @@ package com.fall_sem.set_calculator;
 
 import com.fall_sem.set_calculator.utils.SetOps;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.function.Function;
 
@@ -9,6 +10,7 @@ import static com.fall_sem.set_calculator.utils.CheckForCalculationErrors.*;
 
 public class Evaluator implements Expression.Visitor<Double> {
     private Environment env;
+    private ArrayList<ArrayList<Expression>> sets = new ArrayList<>();
     private boolean print;
 
     public Evaluator(Environment env) {
@@ -46,24 +48,18 @@ public class Evaluator implements Expression.Visitor<Double> {
     @Override
     public Double visitLiteralNode(Expression.Literal expr) { return Double.parseDouble(expr.getValue()); }
 
+
     @Override
     public Double visitFunctionNode(Expression.Function expr) {
-        if(expr.getState()) {
-            double arg = evaluate(expr.getArgument());
-            Function<Double, Double> result = SetOps.singleParamFunctions.get(expr.getFunction().getType());
-            if(result == null) throw new Error("You used a function that isn't implemented yet");
-            return result.apply(arg);
-        }
-        else {
-            ArrayList<Double> args = new ArrayList<>();
-            for(Expression arg : expr.getArguments()){
-                args.add(evaluate(arg));
-            }
+        ArrayList<Expression.Set> args = new ArrayList<>();
+//        for(Expression arg : expr.getArguments()){
+//            args.add(evaluate(arg));
+//        }
+        args.add(sets.get(0));
 
-            Function<ArrayList<Double>, Double> result = SetOps.multiParamFunctions.get(expr.getFunction().getType());
-            if(result == null) throw new Error("You used a function that isn't implemented yet");
-            return result.apply(args);
-        }
+        Function<ArrayList<Double>, Double> result = SetOps.multiParamFunctions.get(expr.getFunction().getType());
+        if(result == null) throw new Error("You used a function that isn't implemented yet");
+        return result.apply(args);
     }
 
     @Override
@@ -118,6 +114,13 @@ public class Evaluator implements Expression.Visitor<Double> {
         }
         // Unreachable.
         throw new Error("Failure in a Binary Node");
+    }
+
+
+    @Override
+    public Double visitSetNode(Expression.Set expr) {
+        sets.add(expr.getValues());
+        return null;
     }
 
     @Override

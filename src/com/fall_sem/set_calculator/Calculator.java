@@ -18,7 +18,7 @@ public class Calculator {
         BufferedReader reader = new BufferedReader( new InputStreamReader(System.in));
         Environment env = new Environment();
         Lexer lexer;
-//        Parser parser;
+        Parser parser;
         Evaluator solver;
         while(true) {
             System.out.print("> ");
@@ -32,10 +32,10 @@ public class Calculator {
                 lexer = new Lexer(line);
                 ArrayList<Token> tokens = lexer.scanTokens();
 
-//                System.out.println(tokens);
-//                parser = new Parser(tokens, env);
-//                Expression expression = parser.parse();
-////                System.out.println(new AstPrinter().print(expression));
+                System.out.println(tokens);
+                parser = new Parser(tokens, env);
+                Expression expression = parser.parse();
+                System.out.println(new AstPrinter().print(expression));
 //                solver = new Evaluator(env);
 //                solver.solve(expression);
             } catch (Exception e) {

@@ -32,9 +32,12 @@ class AstPrinter implements Expression.Visitor<String> {
     public String visitNullNode(Expression.Null expr) { return ""; }
 
     @Override
-    public String visitLiteralNode(Expression.Set expr) {
+    public String visitLiteralNode(Expression.Literal expr) {
         return expr.value.toString();
     }
+
+    @Override
+    public String visitSetNode(Expression.Set expr) { return expr.values.toString(); }
 
     @Override
     public String visitUnaryNode(Expression.Unary expr) {
