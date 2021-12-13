@@ -171,6 +171,7 @@ public class Parser {
             while(match(COMMA)) {
                 values.add(expression());
             }
+            System.out.println(values);
             consume(RIGHT_CB);
             return new Expression.Set(values);
         }

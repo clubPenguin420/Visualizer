@@ -3,10 +3,11 @@ package com.fall_sem.set_calculator;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 public class Environment {
     public Map<String, Double> variables = new HashMap<>();
-    private double previous_result;
+    private TreeSet<Double> previous_result;
 
 
     public void importVariablesFromFile(String path, boolean override) throws IOException {
@@ -34,11 +35,11 @@ public class Environment {
     }
 
 
-    public double getPreviousResult() {
+    public TreeSet<Double> getPreviousResult() {
         return previous_result;
     }
 
-    public void setPreviousResult(double previous_result) {
+    public void setPreviousResult(TreeSet<Double> previous_result) {
         this.previous_result = previous_result;
     }
 }

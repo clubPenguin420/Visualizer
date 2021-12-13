@@ -4,13 +4,15 @@ import com.fall_sem.set_calculator.utils.SetOps;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Stack;
+import java.util.TreeSet;
 import java.util.function.Function;
 
 import static com.fall_sem.set_calculator.utils.CheckForCalculationErrors.*;
 
 public class Evaluator implements Expression.Visitor<Double> {
     private Environment env;
-    private ArrayList<ArrayList<Expression>> sets = new ArrayList<>();
+    private Stack<TreeSet<Double>> sets = new Stack<>();
     private boolean print;
 
     public Evaluator(Environment env) {
@@ -21,13 +23,14 @@ public class Evaluator implements Expression.Visitor<Double> {
     public void solve(Expression expr) {
         print = true;
         try{
-            double result = evaluate(expr);
+            TreeSet<Double> result = sets.pop();
             if(print) {
-                if (String.valueOf(result).endsWith(".0")) {
-                    System.out.println((int) result);
-                } else {
-                    System.out.println(result);
-                }
+                System.out.println(result);
+//                if (String.valueOf(result).endsWith(".0")) {
+//                    System.out.println(sets.pop());
+//                } else {
+//                    System.out.println(result);
+//                }
                 env.setPreviousResult(result);
             }
         } catch(Error e) {
@@ -49,17 +52,18 @@ public class Evaluator implements Expression.Visitor<Double> {
     public Double visitLiteralNode(Expression.Literal expr) { return Double.parseDouble(expr.getValue()); }
 
 
-    @Override
     public Double visitFunctionNode(Expression.Function expr) {
-        ArrayList<Expression.Set> args = new ArrayList<>();
+        ArrayList<TreeSet<Double>> args = new ArrayList<>();
 //        for(Expression arg : expr.getArguments()){
 //            args.add(evaluate(arg));
 //        }
-        args.add(sets.get(0));
+        args.add(sets.pop());
+        args.add(sets.pop());
 
-        Function<ArrayList<Double>, Double> result = SetOps.multiParamFunctions.get(expr.getFunction().getType());
+        Function<ArrayList<TreeSet<Double>>, TreeSet<Double>> result = SetOps.setFunctions.get(expr.getFunction().getType());
         if(result == null) throw new Error("You used a function that isn't implemented yet");
-        return result.apply(args);
+        sets.push(result.apply(args));
+        return 0.0;
     }
 
     @Override
@@ -119,7 +123,12 @@ public class Evaluator implements Expression.Visitor<Double> {
 
     @Override
     public Double visitSetNode(Expression.Set expr) {
-        sets.add(expr.getValues());
+        TreeSet<Double> set = new TreeSet<>();
+        for(Expression exp : expr.getValues()) {
+            set.add(evaluate(exp));
+        }
+
+        sets.push(set);
         return null;
     }
 
